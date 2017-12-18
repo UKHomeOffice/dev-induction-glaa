@@ -25,3 +25,16 @@ pipeline:
       when:
         event: push
         branch: master
+
+
+  deploy_to_dev:
+    image: quay.io/ukhomeofficedigital/kd:v0.3.1
+    secrets:
+      - kube_server_acp_notprod
+      - kube_token_acp_notprod
+      - my_secret
+    commands:
+      - ./deploy.sh
+    when:
+      event: [deployment, push]
+      branch: master
