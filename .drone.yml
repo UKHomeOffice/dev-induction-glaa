@@ -1,6 +1,4 @@
 pipeline:
-
-
     web_build_image:
       image: docker:17.07.0-ce
       environment:
@@ -9,7 +7,6 @@ pipeline:
         - docker build -t dev-induction-glaa:$${DRONE_COMMIT_SHA} .
       when:
         event: [push, tag]
-
     web_latest_image_to_quay:
       image: docker:17.07.0-ce
       secrets:
@@ -25,16 +22,14 @@ pipeline:
       when:
         event: push
         branch: master
-
-
-  deploy_to_dev:
-    image: quay.io/ukhomeofficedigital/kd:v0.3.1
-    secrets:
-      - kube_server_acp_notprod
-      - kube_token_acp_notprod
-      - my_secret
-    commands:
-      - ./deploy.sh
-    when:
-      event: [deployment, push]
-      branch: master
+    deploy_to_dev:
+      image: quay.io/ukhomeofficedigital/kd:v0.3.1
+      secrets:
+        - kube_server_acp_notprod
+        - kube_token_acp_notprod
+        - my_secret
+      commands:
+        - ./deploy.sh
+      when:
+        event: [deployment, push]
+        branch: master
