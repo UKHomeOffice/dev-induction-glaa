@@ -1,36 +1,27 @@
 pipeline:
-  build-image:
-    image: docker:17.09.0-ce
-    environment:
-      - DOCKER_HOST=tcp://172.17.0.1:2375
-    commands:
-      - docker build -t acp-node-hello-world:$${DRONE_COMMIT_SHA} .
 
-  image_to_quay:
-    image: docker:17.09.0-ce
-    secrets:
-      - docker_password
-    environment:
-      - DOCKER_HOST=tcp://172.17.0.1:2375
-    commands:
-      - docker login -u="ukhomeofficedigital+acp_node_hello_world" -p=$${DOCKER_PASSWORD} quay.io
-      - docker tag acp-node-hello-world:$${DRONE_COMMIT_SHA} quay.io/ukhomeofficedigital/acp-node-hello-world:$${DRONE_COMMIT_SHA}
-      - docker tag acp-node-hello-world:$${DRONE_COMMIT_SHA} quay.io/ukhomeofficedigital/acp-node-hello-world:latest
-      - docker push quay.io/ukhomeofficedigital/acp-node-hello-world:$${DRONE_COMMIT_SHA}
-      - docker push quay.io/ukhomeofficedigital/acp-node-hello-world:latest
-    when:
-      branch: master
-      event: push
 
-  tagged_image_to_quay:
-    image: docker:17.09.0-ce
-    secrets:
-      - docker_password
-    environment:
-      - DOCKER_HOST=tcp://172.17.0.1:2375
-    commands:
-      - docker login -u="ukhomeofficedigital+acp_node_hello_world" -p=$${DOCKER_PASSWORD} quay.io
-      - docker tag acp-node-hello-world:$${DRONE_COMMIT_SHA} quay.io/ukhomeofficedigital/acp-node-hello-world:$${DRONE_TAG}
-      - docker push quay.io/ukhomeofficedigital/acp-node-hello-world:$${DRONE_TAG}
-    when:
-      event: tag
+    web_build_image:
+      image: docker:17.07.0-ce
+      environment:
+        - DOCKER_HOST=tcp://172.17.0.1:2375
+      commands:
+        - docker build -t dev-induction-glaa:$${DRONE_COMMIT_SHA} .
+      when:
+        event: [push, tag]
+
+    web_latest_image_to_quay:
+      image: docker:17.07.0-ce
+      secrets:
+        - docker_password
+      environment:
+        - DOCKER_HOST=tcp://172.17.0.1:2375
+      commands:
+        - docker login -u="ukhomeofficedigital+dev-induction-glaa" -p=$${DOCKER_PASSWORD} quay.io
+        - docker tag dev-induction-glaa:$${DRONE_COMMIT_SHA} quay.io/ukhomeofficedigital/dev-induction-glaa:$${DRONE_COMMIT_SHA}
+        - docker tag dev-induction-glaa:$${DRONE_COMMIT_SHA} quay.io/ukhomeofficedigital/dev-induction-glaa:latest
+        - docker push quay.io/ukhomeofficedigital/dev-induction-glaa:$${DRONE_COMMIT_SHA}
+        - docker push quay.io/ukhomeofficedigital/dev-induction-glaa:latest
+      when:
+        event: push
+        branch: master
